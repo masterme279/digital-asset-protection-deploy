@@ -3,7 +3,7 @@ export interface ApiError extends Error {
   data?: unknown;
 }
 
-const DEFAULT_API_BASE = 'http://127.0.0.1:8000';
+const DEFAULT_API_BASE = 'https://digital-asset-protection-deploy.onrender.com';
 
 export const API_BASE_URL =
   (import.meta as any).env?.VITE_API_BASE_URL || DEFAULT_API_BASE;
