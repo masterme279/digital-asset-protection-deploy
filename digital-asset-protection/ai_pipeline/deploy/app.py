@@ -31,6 +31,13 @@ def _env_str(name: str, default: str) -> str:
     return raw.strip()
 
 
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None or raw.strip() == "":
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
 def _normalize(vec: np.ndarray) -> np.ndarray:
     denom = float(np.linalg.norm(vec) + 1e-12)
     return (vec / denom).astype(np.float32)
@@ -59,44 +66,90 @@ class Models:
         # Keep CPU use predictable (Render RAM/CPU is limited)
         torch.set_grad_enabled(False)
         torch.set_num_threads(_env_int("TORCH_NUM_THREADS", 1))
+        try:
+            torch.set_num_interop_threads(_env_int("TORCH_NUM_INTEROP_THREADS", 1))
+        except Exception:
+            pass
 
-        clip_arch = _env_str("CLIP_ARCH", "ViT-B-32")
+        # NOTE: Render free (512MB) will often OOM with ViT-B/32 + DINOv2 in fp32.
+        # RN50 is smaller; you can still override via env.
+        clip_arch = _env_str("CLIP_ARCH", "RN50")
         clip_pretrained = _env_str("CLIP_PRETRAINED", "openai")
-        self.clip_model, _, self.clip_preprocess = open_clip.create_model_and_transforms(
-            clip_arch,
-            pretrained=clip_pretrained,
-            force_quick_gelu=True,
-        )
-        self.clip_tokenizer = open_clip.get_tokenizer(clip_arch)
-        self.clip_model = self.clip_model.to(self.device)
-        self.clip_model.eval()
+        self.load_clip = _env_bool("LOAD_CLIP", True)
+        self.load_dinov2 = _env_bool("LOAD_DINOV2", True)
+        self.quantize_int8 = _env_bool("MODEL_QUANTIZE_INT8", True)
 
-        dinov2_model_id = _env_str("DINOV2_MODEL", "facebook/dinov2-small")
-        self.dino_processor = AutoImageProcessor.from_pretrained(dinov2_model_id)
-        self.dino_model = AutoModel.from_pretrained(dinov2_model_id, low_cpu_mem_usage=True)
-        self.dino_model = self.dino_model.to(self.device)
-        self.dino_model.eval()
+        self.clip_model = None
+        self.clip_preprocess = None
+        self.clip_tokenizer = None
+
+        if self.load_clip:
+            self.clip_model, _, self.clip_preprocess = open_clip.create_model_and_transforms(
+                clip_arch,
+                pretrained=clip_pretrained,
+                force_quick_gelu=True,
+            )
+            self.clip_tokenizer = open_clip.get_tokenizer(clip_arch)
+            self.clip_model = self.clip_model.to(self.device)
+            self.clip_model.eval()
+
+            if self.quantize_int8:
+                # Dynamic quantization reduces RAM a lot on CPU. Inference becomes slower (OK for hackathon deploy).
+                try:
+                    self.clip_model = torch.quantization.quantize_dynamic(
+                        self.clip_model,
+                        {torch.nn.Linear},
+                        dtype=torch.qint8,
+                    )
+                except Exception:
+                    # If quantization fails for any reason, continue with fp32.
+                    pass
+
+        self.dino_processor = None
+        self.dino_model = None
+        dinov2_model_id = _env_str("DINOV2_MODEL", "facebook/dinov2-vits14")
+        if self.load_dinov2:
+            self.dino_processor = AutoImageProcessor.from_pretrained(dinov2_model_id)
+            self.dino_model = AutoModel.from_pretrained(dinov2_model_id, low_cpu_mem_usage=True)
+            self.dino_model = self.dino_model.to(self.device)
+            self.dino_model.eval()
+
+            if self.quantize_int8:
+                try:
+                    self.dino_model = torch.quantization.quantize_dynamic(
+                        self.dino_model,
+                        {torch.nn.Linear},
+                        dtype=torch.qint8,
+                    )
+                except Exception:
+                    pass
 
         self.clip_arch = clip_arch
         self.clip_pretrained = clip_pretrained
         self.dinov2_model_id = dinov2_model_id
 
     def clip_image_embedding(self, image: Image.Image) -> np.ndarray:
+        if self.clip_model is None or self.clip_preprocess is None:
+            raise RuntimeError("CLIP is disabled (LOAD_CLIP=0)")
         tensor = self.clip_preprocess(image).unsqueeze(0).to(self.device)
-        with torch.no_grad():
+        with torch.inference_mode():
             emb = self.clip_model.encode_image(tensor)
         return emb.detach().cpu().numpy().flatten().astype(np.float32)
 
     def clip_text_embedding(self, text: str) -> np.ndarray:
+        if self.clip_model is None or self.clip_tokenizer is None:
+            raise RuntimeError("CLIP is disabled (LOAD_CLIP=0)")
         tokens = self.clip_tokenizer([text]).to(self.device)
-        with torch.no_grad():
+        with torch.inference_mode():
             emb = self.clip_model.encode_text(tokens)
         return emb.detach().cpu().numpy().flatten().astype(np.float32)
 
     def dinov2_embedding(self, image: Image.Image) -> np.ndarray:
+        if self.dino_model is None or self.dino_processor is None:
+            raise RuntimeError("DINOv2 is disabled (LOAD_DINOV2=0)")
         inputs = self.dino_processor(images=image, return_tensors="pt")
         inputs = {k: v.to(self.device) for k, v in inputs.items()}
-        with torch.no_grad():
+        with torch.inference_mode():
             outputs = self.dino_model(**inputs)
         cls = outputs.last_hidden_state[:, 0, :]
         return cls.detach().cpu().numpy().flatten().astype(np.float32)
@@ -152,10 +205,13 @@ def health() -> dict:
         "clip": {
             "arch": getattr(_models, "clip_arch", None),
             "pretrained": getattr(_models, "clip_pretrained", None),
+            "enabled": getattr(_models, "load_clip", None),
         },
         "dinov2": {
             "model": getattr(_models, "dinov2_model_id", None),
+            "enabled": getattr(_models, "load_dinov2", None),
         },
+        "quantize_int8": getattr(_models, "quantize_int8", None),
     }
 
 
@@ -169,7 +225,7 @@ async def infer_text_image(
 
     img = _load_image(image)
 
-    with torch.no_grad():
+    with torch.inference_mode():
         img_emb = _models.clip_image_embedding(img)
         txt_emb = _models.clip_text_embedding(text)
 
@@ -191,7 +247,7 @@ async def infer_image_pair(
     a = _load_image(image_a)
     b = _load_image(image_b)
 
-    with torch.no_grad():
+    with torch.inference_mode():
         a_clip = _models.clip_image_embedding(a)
         b_clip = _models.clip_image_embedding(b)
         a_dino = _models.dinov2_embedding(a)
