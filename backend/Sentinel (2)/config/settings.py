@@ -155,7 +155,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:3000',
 ] + [
     origin.strip()
-    for origin in os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
+    for origin in os.environ.get('CORS_ORIGINS', '').split(',')
     if origin.strip()
 ]
 CORS_ALLOW_CREDENTIALS = True
