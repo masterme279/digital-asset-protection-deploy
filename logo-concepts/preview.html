@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sentinel Logo Concepts</title>
+  <style>
+    :root {
+      --bg: #060d16;
+      --panel: #0d1421;
+      --line: #17304a;
+      --text: #e8f4ff;
+      --muted: #7fa6c7;
+      --accent: #22d3ee;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(1200px 700px at 20% -10%, #13314d 0%, var(--bg) 45%), var(--bg);
+      color: var(--text);
+      padding: 28px;
+    }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    p { margin: 0 0 22px; color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .card {
+      background: color-mix(in oklab, var(--panel) 90%, black 10%);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+    }
+    .tag {
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    img {
+      width: 100%;
+      border-radius: 12px;
+      display: block;
+      border: 1px solid #204060;
+    }
+    .hint {
+      margin-top: 18px;
+      font-size: 14px;
+      color: #99bad7;
+    }
+    @media (min-width: 1100px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Sentinel Logo Concepts</h1>
+  <p>Pick one: <strong>A</strong> for enterprise/core shield, or <strong>B</strong> for active signal shield.</p>
+
+  <section class="grid">
+    <article class="card">
+      <span class="tag">Concept A</span>
+      <img src="./sentinel-concept-a.svg" alt="Sentinel Concept A" />
+    </article>
+    <article class="card">
+      <span class="tag">Concept B</span>
+      <img src="./sentinel-concept-b.svg" alt="Sentinel Concept B" />
+    </article>
+  </section>
+
+  <p class="hint">Reply with: <strong>A</strong> or <strong>B</strong>, plus any tweak like "thicker lines" or "remove dot".</p>
+</body>
+</html>

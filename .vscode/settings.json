@@ -1,0 +1,7 @@
+{
+  "git.ignoreLimitWarning": true,
+  "CodeGPT.apiKey": "Groq",
+  "chat.tools.terminal.autoApprove": {
+    "npm run lint": true
+  }
+}

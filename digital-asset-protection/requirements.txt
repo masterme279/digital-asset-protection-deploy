@@ -1,0 +1,14 @@
+librosa
+soundfile
+pyacoustid          # Chromaprint bindings
+transformers
+torch
+open-clip-torch
+fastapi
+uvicorn
+requests
+yt-dlp
+python-dotenv
+numpy
+pillow
+python-multipart

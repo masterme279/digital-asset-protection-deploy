@@ -1,0 +1,38 @@
+<svg width="900" height="300" viewBox="0 0 900 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="a_bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0D1421"/>
+      <stop offset="100%" stop-color="#0A1B2E"/>
+    </linearGradient>
+    <linearGradient id="a_shield" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <filter id="a_glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="900" height="300" fill="url(#a_bg)"/>
+
+  <g transform="translate(70,50)">
+    <rect x="0" y="0" width="200" height="200" rx="44" fill="#081221" stroke="#1E3A5F" stroke-width="2"/>
+    <rect x="14" y="14" width="172" height="172" rx="36" fill="none" stroke="#153352" stroke-width="1.5"/>
+
+    <path d="M100 36L146 53V95C146 127 122 154 100 164C78 154 54 127 54 95V53L100 36Z" fill="url(#a_shield)" fill-opacity="0.2" stroke="#38BDF8" stroke-width="3" filter="url(#a_glow)"/>
+
+    <path d="M84 78H118V90H96V103H112V115H96V128H84V78Z" fill="#E8F4FF"/>
+    <circle cx="136" cy="72" r="4" fill="#22D3EE"/>
+  </g>
+
+  <g transform="translate(320,86)">
+    <text x="0" y="56" fill="#F8FCFF" font-size="72" font-family="'Space Mono', monospace" font-weight="700" letter-spacing="10">SENTINEL</text>
+    <text x="2" y="94" fill="#77A5C8" font-size="20" font-family="'Space Mono', monospace" letter-spacing="7">ASSET INTELLIGENCE</text>
+    <rect x="2" y="114" width="530" height="2" fill="#17304A"/>
+    <text x="2" y="144" fill="#5E84A8" font-size="16" font-family="'Space Mono', monospace" letter-spacing="3">CONCEPT A · CORE SHIELD · ENTERPRISE</text>
+  </g>
+</svg>

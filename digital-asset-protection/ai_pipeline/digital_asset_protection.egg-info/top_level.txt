@@ -1,0 +1,6 @@
+audio
+image
+utils
+vector_db
+video
+watermark

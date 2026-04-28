@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import "leaflet/dist/leaflet.css";
+@import "tailwindcss";
+
+@theme {
+  --color-brand-bg: #080C14;
+  --color-brand-surface: #0D1421;
+  --color-brand-surface2: #111927;
+  --color-brand-accent: #0EA5E9;
+  --color-brand-accent2: #8B5CF6;
+  --color-brand-accent3: #10B981;
+  --color-brand-danger: #EF4444;
+  --color-brand-warn: #F59E0B;
+  --color-brand-text: #C8D8EA;
+  --color-brand-muted: #4A6080;
+  --color-brand-border: rgba(14, 165, 233, 0.13);
+
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-serif: "Playfair Display", serif;
+}
+
+@utility glass-card {
+  background: var(--color-brand-surface);
+  border: 1px solid var(--color-brand-border);
+  border-radius: 12px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+@utility mission-control-header {
+  @apply text-brand-accent text-[11px] font-mono font-bold uppercase tracking-[0.2em] opacity-80;
+}
+
+@utility primary-button {
+  @apply h-[44px] px-6 rounded-lg bg-brand-accent text-white font-bold text-sm transition-all duration-300 hover:shadow-[0_0_25px_rgba(14,165,233,0.3)] active:scale-95 flex items-center justify-center gap-2 cursor-pointer;
+}
+
+@utility ghost-button {
+  @apply h-[44px] px-6 rounded-lg bg-transparent border border-brand-border text-brand-text font-bold text-sm transition-all duration-300 hover:bg-white/5 active:scale-95 flex items-center justify-center gap-2 cursor-pointer;
+}
+
+@utility danger-ghost-button {
+  @apply h-[40px] px-5 rounded-[10px] bg-transparent border border-brand-danger text-brand-danger font-semibold text-sm transition-all duration-300 hover:bg-brand-danger hover:text-white active:scale-95 flex items-center justify-center gap-2 cursor-pointer;
+}
+
+@utility badge {
+   @apply px-3 py-1 bg-brand-accent/10 border border-brand-accent text-brand-accent rounded-full text-[11px] font-bold inline-block;
+}
+
+@utility perspective-2000 { perspective: 2000px; }
+@utility preserve-3d { transform-style: preserve-3d; }
+@utility sentinel-stamp {
+  @apply relative overflow-hidden flex items-center justify-center;
+  &::before {
+    content: 'SENTINEL VERIFIED';
+    @apply absolute border-[3px] border-brand-accent/45 text-brand-accent/45 font-mono font-black text-[8px] uppercase px-3 py-1.5 rounded-md rotate-[-12deg] tracking-[0.18em] pointer-events-none;
+    text-shadow: 0 0 6px rgba(14, 165, 233, 0.22);
+  }
+  &::after {
+    content: '';
+    @apply absolute w-2 h-2 rounded-full bg-brand-accent/45 pointer-events-none;
+    transform: translate(42px, -16px);
+    box-shadow: 0 0 8px rgba(14, 165, 233, 0.35);
+  }
+}
+
+@utility sentinel-stamp-red {
+  @apply sentinel-stamp;
+  &::before {
+    content: 'LEGAL ENFORCEMENT';
+    @apply border-brand-danger/40 text-brand-danger/40;
+  }
+  &::after {
+    @apply bg-brand-danger/45;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.35);
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-brand-bg text-brand-text font-sans antialiased;
+  }
+}
+
+@layer components {
+  .mono { font-family: "Space Mono", monospace; }
+
+  .bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(var(--color-brand-border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--color-brand-border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    z-index: 0;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.12;
+    z-index: 0;
+  }
+
+  .orb-1 { width: 400px; height: 400px; background: var(--color-brand-accent); top: -100px; left: -100px; }
+  .orb-2 { width: 350px; height: 350px; background: var(--color-brand-accent2); bottom: -50px; right: -50px; }
+
+  .btn-primary { @apply primary-button; }
+  .btn-ghost { @apply ghost-button; }
+
+  .badge-high {
+    @apply bg-brand-danger text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded-md uppercase tracking-wider border-none;
+  }
+  .badge-med {
+    @apply bg-brand-warn/20 border border-brand-warn/50 text-brand-warn text-[10px] font-mono font-bold px-2 py-0.5 rounded-md uppercase tracking-wider;
+  }
+  .badge-low {
+    @apply bg-brand-accent3/20 border border-brand-accent3/40 text-brand-accent3 text-[10px] font-mono font-bold px-2 py-0.5 rounded-md uppercase tracking-wider;
+  }
+
+  /* Animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.05); }
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  @keyframes dash {
+    to { stroke-dashoffset: -20; }
+    from { stroke-dashoffset: 0; }
+  }
+
+  .float-animation {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .shimmer-effect::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.05),
+      transparent
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  .dash-animation {
+    background-image: linear-gradient(90deg, var(--color-brand-accent) 50%, transparent 50%);
+    background-size: 15px 1px;
+    animation: dash-move 20s linear infinite;
+  }
+
+  @keyframes dash-move {
+    from { background-position: 0 0; }
+    to { background-position: 100% 0; }
+  }
+
+  /* 3D Utilities usage */
+  .glass-card-3d {
+    @apply glass-card transition-all duration-500 ease-out preserve-3d;
+  }
+  
+  .glass-card-3d:hover {
+    @apply shadow-[0_20px_50px_rgba(0,0,0,0.5)];
+  }
+
+  .hover-tilt {
+    transition: transform 0.2s ease-out;
+  }
+}
+
+@keyframes scan {
+  0% { top: 0%; opacity: 0; }
+  5% { opacity: 1; }
+  95% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+.scan-line-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, transparent, var(--color-brand-accent), transparent);
+  box-shadow: 0 0 15px var(--color-brand-accent);
+  animation: scan 4s linear infinite;
+  z-index: 20;
+  pointer-events: none;
+}
+
+

@@ -1,0 +1,41 @@
+<svg width="900" height="300" viewBox="0 0 900 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="b_bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0D1421"/>
+      <stop offset="100%" stop-color="#081A2D"/>
+    </linearGradient>
+    <linearGradient id="b_shield" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#22D3EE"/>
+      <stop offset="100%" stop-color="#0EA5E9"/>
+    </linearGradient>
+    <filter id="b_glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="900" height="300" fill="url(#b_bg)"/>
+
+  <g transform="translate(70,50)">
+    <rect x="0" y="0" width="200" height="200" rx="44" fill="#081221" stroke="#1E3A5F" stroke-width="2"/>
+    <rect x="14" y="14" width="172" height="172" rx="36" fill="none" stroke="#153352" stroke-width="1.5"/>
+
+    <path d="M100 36L146 53V95C146 127 122 154 100 164C78 154 54 127 54 95V53L100 36Z" fill="url(#b_shield)" fill-opacity="0.18" stroke="#22D3EE" stroke-width="3"/>
+
+    <path d="M78 84C82 75 90 70 102 70C112 70 120 74 126 80L117 90C113 86 108 84 102 84C96 84 91 87 89 92C87 96 89 99 95 101L111 106C123 110 127 119 124 129C120 141 108 148 93 148C80 148 69 143 62 134L72 124C77 131 84 135 93 135C99 135 104 132 106 128C108 124 106 121 100 119L84 114C71 110 68 99 78 84Z" fill="#E8F4FF"/>
+
+    <circle cx="136" cy="72" r="4" fill="#22D3EE" filter="url(#b_glow)"/>
+    <path d="M136 72C147 72 156 81 156 92" stroke="#22D3EE" stroke-width="2" stroke-linecap="round"/>
+    <path d="M136 72C151 72 164 85 164 100" stroke="#22D3EE" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  </g>
+
+  <g transform="translate(320,86)">
+    <text x="0" y="56" fill="#F8FCFF" font-size="72" font-family="'Space Mono', monospace" font-weight="700" letter-spacing="10">SENTINEL</text>
+    <text x="2" y="94" fill="#77A5C8" font-size="20" font-family="'Space Mono', monospace" letter-spacing="7">ACTIVE THREAT MONITORING</text>
+    <rect x="2" y="114" width="530" height="2" fill="#17304A"/>
+    <text x="2" y="144" fill="#5E84A8" font-size="16" font-family="'Space Mono', monospace" letter-spacing="3">CONCEPT B · SIGNAL SHIELD · DYNAMIC</text>
+  </g>
+</svg>

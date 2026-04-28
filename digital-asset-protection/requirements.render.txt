@@ -1,0 +1,16 @@
+# Minimal deps for Render deployment of the ML inference API (CLIP + DINOv2)
+# Keeps the build reliable on Render by avoiding native/system deps.
+
+fastapi
+uvicorn
+python-multipart
+python-dotenv
+
+torch
+transformers
+open-clip-torch
+
+numpy
+pillow
+
+requests

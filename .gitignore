@@ -1,0 +1,37 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Large artifacts (do not commit)
+backend/backend.zip
+
+# Python / ML (keep repo small + deployable)
+__pycache__/
+*.py[cod]
+*.pyd
+
+# Virtual environments
+.venv/
+.venv*/
+venv/
+env/
+
+# Local databases / artifacts
+*.sqlite3
+*.sqlite3-journal
+*.db
+
+# Local tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+.claude/
+
+# Model caches (weights are downloaded at runtime)
+.hf/
